@@ -1,3 +1,4 @@
+# .github/workflows/deploy.yml
 name: Build and deploy Python app to Azure Web App - twiscope-bot
 
 on:
@@ -25,7 +26,11 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip . -x "venv/*" -x ".git/*" -x ".github/*"
+        run: |
+          zip -r release.zip . \
+            -x "venv/*" \
+            -x ".git/*" \
+            -x ".github/*"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -55,7 +60,7 @@ jobs:
             echo "Extracting output.tar.gz..."
             tar -xzf output.tar.gz
           else
-            echo "output.tar.gz not found, skipping extraction."
+            echo "output.tar.gz not found, skipping."
           fi
 
       - name: Login to Azure
