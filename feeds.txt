@@ -1,0 +1,6 @@
+# feeds.txt
+# List of RSS feeds to monitor (one per line)
+
+https://www.bleepingcomputer.com/feed/
+https://threatpost.com/feed/
+# https://example.com/optional-feed (commented out)
