@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/16bff115-402b-4799-9236-117014156f79/resourceGroups/twiscope-bot_group/providers/Microsoft.Web/sites/twiscope-bot",
+    "appService.deploySubpath": "."
+}
