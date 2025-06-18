@@ -21,11 +21,6 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Create virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-
       - name: Install dependencies
         run: pip install -r requirements.txt
 
@@ -53,6 +48,15 @@ jobs:
 
       - name: Unzip artifact
         run: unzip release.zip
+
+      - name: Extract output.tar.gz if exists
+        run: |
+          if [ -f output.tar.gz ]; then
+            echo "Extracting output.tar.gz..."
+            tar -xzf output.tar.gz
+          else
+            echo "output.tar.gz not found, skipping extraction."
+          fi
 
       - name: Login to Azure
         uses: azure/login@v2
