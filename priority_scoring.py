@@ -1,55 +1,43 @@
-# twiscope/priority_scoring.py
-# Assigns priority scores to RSS entries based on security-related keywords
-
+# Priority scoring for RSS entries
 from typing import List, Dict, Any
 
 # Security-related keywords and their weight scores
 SECURITY_KEYWORDS = {
-    "0-day": 10,        # Critical zero-day vulnerabilities
-    "exploit": 9,       # Active exploitation
-    "breach": 8,        # Security breaches
-    "ransomware": 7,    # Ransomware attacks
-    "critical": 6,      # Critical security issues
-    "patch": 5,         # Security patches
-    "vulnerability": 5, # General vulnerabilities
-    "malware": 4,       # Malware threats
-    "CVE": 3,          # Common Vulnerabilities and Exposures
-    "security": 2,      # General security news
+    "0-day": 10,
+    "exploit": 9,
+    "breach": 8,
+    "ransomware": 7,
+    "critical": 6,
+    "patch": 5,
+    "vulnerability": 5,
+    "malware": 4,
+    "CVE": 3,
+    "security": 2,
 }
 
+def calculate_keyword_score(text: str, keywords: Dict[str, int]) -> int:
+    """Calculate score for a text based on keyword presence."""
+    score = 0
+    text_lower = text.lower()
+    for keyword, weight in keywords.items():
+        if keyword.lower() in text_lower:
+            score += weight
+    return score
+
+def calculate_entry_score(entry: Dict[str, Any]) -> int:
+    """Calculate total score for a single entry."""
+    title = entry.get("title", "")
+    summary = entry.get("summary", "")
+    title_score = calculate_keyword_score(title, SECURITY_KEYWORDS) * 2  # Double weight for title
+    summary_score = calculate_keyword_score(summary, SECURITY_KEYWORDS)
+    return title_score + summary_score
+
+def sort_entries_by_score(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Sort entries by score in descending order."""
+    return sorted(entries, key=lambda x: x["score"], reverse=True)
+
 def score_entries(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Score RSS entries based on security-related keywords in their title and summary.
-    
-    Args:
-        entries (List[Dict[str, Any]]): List of RSS entries, each containing 'title' and 'summary'
-        
-    Returns:
-        List[Dict[str, Any]]: The same entries with added 'score' field, sorted by score
-        
-    Example entry format:
-    {
-        'title': 'Article Title',
-        'summary': 'Article Summary',
-        'link': 'https://example.com',
-        'score': 15  # Added by this function
-    }
-    """
+    """Score RSS entries by security keywords."""
     for entry in entries:
-        score = 0
-        title = entry.get("title", "").lower()
-        summary = entry.get("summary", "").lower()
-
-        # Calculate score based on keyword presence
-        for keyword, weight in SECURITY_KEYWORDS.items():
-            keyword_lower = keyword.lower()
-            if keyword_lower in title:
-                score += weight * 2  # Double weight for keywords in title
-            if keyword_lower in summary:
-                score += weight
-
-        entry["score"] = score
-
-    # Sort entries by score (highest first)
-    entries.sort(key=lambda x: x["score"], reverse=True)
-    return entries
+        entry["score"] = calculate_entry_score(entry)
+    return sort_entries_by_score(entries)

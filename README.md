@@ -1,157 +1,214 @@
 # Twiscope
 
-Twiscope is an intelligent cybersecurity news aggregator that brings critical security updates directly to your Telegram channel. By continuously monitoring multiple trusted RSS feeds, it ensures security professionals stay informed about emerging threats, vulnerabilities, and industry developments in real-time.
+**An intelligent cybersecurity news aggregator that delivers critical security updates directly to your Telegram.**
 
-Using a sophisticated priority scoring system, Twiscope evaluates the significance of each security update based on carefully selected keywords and context. This ensures that high-priority news about zero-day vulnerabilities, active exploits, or major security breaches reaches you first, helping you maintain a proactive security posture.
-
-Designed for reliability and 24/7 operation, Twiscope features robust error handling, comprehensive logging, and seamless cloud deployment capabilities, making it an invaluable tool for security teams, researchers, and cybersecurity enthusiasts.
+Twiscope continuously monitors trusted RSS feeds and uses smart priority scoring to ensure you receive the most important security news first - from zero-day vulnerabilities to major breaches.
 
 ---
 
-## 🚀 Features
-- Continuous monitoring of multiple configurable RSS feeds
-- Smart duplicate detection and prevention
-- Priority-based news scoring system using security keywords
-- Rate-limited Telegram messaging to prevent spam
-- Robust error handling and automatic recovery
-- Comprehensive logging with rotation
-- Graceful shutdown support
-- Designed for 24/7 operation
+## ✨ Features
+
+- **Smart Monitoring**: Tracks multiple RSS feeds with duplicate detection
+- **Priority Scoring**: Keywords-based system prioritizes critical security news
+- **Telegram Integration**: Real-time delivery with rate limiting
+- **24/7 Operation**: Robust error handling and automatic recovery
+- **Easy Deployment**: Cloud-ready with simple configuration
+- **Comprehensive Logging**: Rotating logs with configurable levels
 
 ---
 
-## ⚙️ Requirements
+## 🚀 Quick Start
+
+### Prerequisites
 - Python 3.8+
-- A Telegram bot (created via [BotFather](https://t.me/BotFather))
-- A Telegram channel where your bot is added as an admin
-- Linux-based hosting environment (e.g., Oracle Cloud VM, AWS EC2, etc.)
+- Telegram bot token ([Create one](https://t.me/BotFather))
+- Telegram chat/channel ID
 
----
-
-## 🧩 Installation
-
+### Installation
 ```bash
-# Clone the project
 git clone https://github.com/nullom/twiscope-bot.git
 cd twiscope-bot
-
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
 
----
-
-## 📄 Setup
-
-1. **Set environment variables** (in your environment or .env file):
-   - `TELEGRAM_TOKEN=your_bot_token_here`
-   - `TELEGRAM_CHAT_ID=your_channel_chat_id_here`
-
-2. **Add your RSS sources** in `feeds.txt` (one URL per line):
-```
-https://www.bleepingcomputer.com/feed/
-https://threatpost.com/feed/
-```
-
-3. **Directory Structure**:
-```
-twiscope/
-├── logs/          # Log files with rotation
-├── data/          # Persistent data storage
-└── feeds.txt      # RSS feed configuration
-```
-
-4. **Run the bot**:
-```bash
-python main.py
-```
-
----
-
-## ☁️ Cloud Deployment (Oracle Cloud)
-
-1. **Create an Oracle Cloud VM Instance**:
-   - Use Ubuntu 22.04 or later
-   - Enable public IP
-   - Configure security list for SSH access
-
-2. **Use cloud-init for Automated Setup**:
-   ```yaml
-   #cloud-config
-   package_update: true
-   package_upgrade: true
-   
-   packages:
-     - python3-pip
-     - supervisor
-   
-   write_files:
-     - path: /etc/supervisor/conf.d/twiscope.conf
-       content: |
-         [program:twiscope]
-         directory=/opt/twiscope
-         command=python3 main.py
-         user=ubuntu
-         autostart=true
-         autorestart=true
-         stderr_logfile=/var/log/supervisor/twiscope.err.log
-         stdout_logfile=/var/log/supervisor/twiscope.out.log
-   
-   runcmd:
-     - mkdir -p /opt/twiscope
-     - git clone https://github.com/nullom/twiscope-bot.git /opt/twiscope
-     - chown -R ubuntu:ubuntu /opt/twiscope
-     - cd /opt/twiscope
-     - pip3 install -r requirements.txt
-     - systemctl enable supervisor
-     - systemctl start supervisor
+### Configuration
+1. **Environment Variables** (create `.env` file):
+   ```env
+   TELEGRAM_TOKEN=your_bot_token_here
+   TELEGRAM_CHAT_ID=your_chat_id_here
    ```
 
-3. **Monitor the Bot**:
-   - Check Supervisor status: `sudo supervisorctl status`
-   - View logs: 
-     - Application logs: `/opt/twiscope/logs/twiscope.log`
-     - Supervisor logs: `/var/log/supervisor/twiscope.*.log`
+2. **RSS Feeds** (edit `feeds.txt`):
+   ```
+   https://www.bleepingcomputer.com/feed/
+   https://threatpost.com/feed/
+   ```
+
+3. **Run**:
+   ```bash
+   python main.py
+   ```
 
 ---
 
-## 🧠 Notes
-- All configuration files (`.env`, `feeds.txt`) are excluded from Git
-- Messages are spaced 30 seconds apart to avoid spam filtering
-- News priority scoring is based on security-related keyword weights
-- Automatic log rotation keeps disk usage under control
-- Graceful shutdown ensures no messages are lost
+## ☁️ Cloud Deployment
+
+### Oracle Cloud (Recommended)
+
+**1. Create VM Instance**
+- OS: Ubuntu 22.04+
+- Shape: VM.Standard.E2.1.Micro (free tier)
+- Enable public IP and SSH access
+
+**2. Automated Setup** (paste in cloud-init):
+```yaml
+#cloud-config
+package_update: true
+packages: [python3-pip, supervisor]
+
+write_files:
+  - path: /opt/twiscope/.env
+    content: |
+      TELEGRAM_TOKEN=YOUR_BOT_TOKEN
+      TELEGRAM_CHAT_ID=YOUR_CHAT_ID
+    permissions: '0600'
+  
+  - path: /opt/twiscope/feeds.txt
+    content: |
+      https://www.bleepingcomputer.com/feed/
+      https://threatpost.com/feed/
+  
+  - path: /etc/supervisor/conf.d/twiscope.conf
+    content: |
+      [program:twiscope]
+      directory=/opt/twiscope
+      command=python3 main.py
+      user=ubuntu
+      autostart=true
+      autorestart=true
+      stderr_logfile=/var/log/supervisor/twiscope.err.log
+
+runcmd:
+  - git clone https://github.com/nullom/twiscope-bot.git /opt/twiscope
+  - chown -R ubuntu:ubuntu /opt/twiscope
+  - cd /opt/twiscope && pip3 install -r requirements.txt
+  - systemctl enable --now supervisor
+```
+
+**3. Monitor**
+```bash
+# Check status
+sudo supervisorctl status
+
+# View logs
+tail -f /opt/twiscope/logs/twiscope.log
+tail -f /var/log/supervisor/twiscope.err.log
+```
+
+### Other Cloud Providers
+- **AWS**: Use EC2 with the same cloud-init script
+- **DigitalOcean**: Create droplet with Ubuntu and run setup manually
+- **Azure**: Use VM with custom data for automated setup
 
 ---
 
-## 📦 Versioning
-Current version: v2.0.2
-- v2.0.0: Major update with cloud deployment support
-- v2.0.1: Code quality improvements and documentation updates
-- v2.0.2: Enhanced project description and repository URL updates
+## 🔧 Configuration
+
+### Environment Variables
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `TELEGRAM_TOKEN` | Bot token from BotFather | ✅ |
+| `TELEGRAM_CHAT_ID` | Target chat/channel ID | ✅ |
+
+### RSS Feeds (`feeds.txt`)
+- One URL per line
+- Comments start with `#`
+- Invalid URLs are automatically skipped
+
+### Scoring System
+Priority keywords (higher score = higher priority):
+- `0-day`: 10 points
+- `exploit`: 9 points  
+- `breach`: 8 points
+- `ransomware`: 7 points
+- `critical`: 6 points
+- Title keywords get 2x weight
+
+---
+
+## 📊 Monitoring & Logs
+
+### Log Locations
+- **Application**: `logs/twiscope.log`
+- **Supervisor**: `/var/log/supervisor/twiscope.*.log`
+
+### Log Levels
+- **INFO**: Normal operations, sent messages
+- **WARNING**: Network timeouts, invalid URLs
+- **ERROR**: API errors, file issues
+- **CRITICAL**: System failures
+
+### Commands
+```bash
+# Restart bot
+sudo supervisorctl restart twiscope
+
+# Check logs in real-time
+tail -f logs/twiscope.log
+
+# View recent errors
+grep ERROR logs/twiscope.log | tail -20
+```
+
+---
+
+## 🛠️ Development
+
+### Project Structure
+```
+twiscope-bot/
+├── main.py              # Entry point and orchestration
+├── rss_collector.py     # RSS feed processing
+├── priority_scoring.py  # News scoring algorithm
+├── tg_sender.py         # Telegram API integration
+├── requirements.txt     # Dependencies
+├── feeds.txt           # RSS feed URLs
+├── .env                # Environment variables (create)
+├── data/               # Runtime data (auto-created)
+└── logs/               # Application logs (auto-created)
+```
+
+### Adding Features
+- **New scoring rules**: Edit `priority_scoring.py`
+- **Additional feeds**: Add to `feeds.txt`
+- **Custom formatting**: Modify `format_message()` in `main.py`
 
 ---
 
 ## 🤝 Contributing
-Pull requests are welcome! For major changes, please open an issue first to discuss what you would like to change.
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ---
 
-## 📬 License
-MIT License. Feel free to fork and contribute!
+## 📜 License
+
+MIT License - see LICENSE file for details.
 
 ---
 
-## 🔮 Future Plans
-- Sentiment analysis for threat intelligence
-- Customizable scoring rules via configuration
-- Web dashboard for monitoring and configuration
-- Integration with additional news sources
-- AI-powered relevance scoring
-- Custom notification rules and filters
+## 🆔 Version
 
-> Made with ❤️ by [nullom]
+**v2.0.2** - Production Ready
+- Cloud deployment optimized
+- Enhanced error handling
+- Modular architecture
+- Comprehensive documentation
+
+---
+
+*Built with ❤️ for the cybersecurity community*
