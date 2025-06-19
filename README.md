@@ -1,6 +1,10 @@
 # Twiscope
 
-Twiscope is a lightweight Python bot that collects the latest cybersecurity news from multiple RSS feeds and sends them directly to a Telegram channel. Ideal for security professionals and enthusiasts who want automated, real-time updates.
+Twiscope is an intelligent cybersecurity news aggregator that brings critical security updates directly to your Telegram channel. By continuously monitoring multiple trusted RSS feeds, it ensures security professionals stay informed about emerging threats, vulnerabilities, and industry developments in real-time.
+
+Using a sophisticated priority scoring system, Twiscope evaluates the significance of each security update based on carefully selected keywords and context. This ensures that high-priority news about zero-day vulnerabilities, active exploits, or major security breaches reaches you first, helping you maintain a proactive security posture.
+
+Designed for reliability and 24/7 operation, Twiscope features robust error handling, comprehensive logging, and seamless cloud deployment capabilities, making it an invaluable tool for security teams, researchers, and cybersecurity enthusiasts.
 
 ---
 
@@ -28,8 +32,8 @@ Twiscope is a lightweight Python bot that collects the latest cybersecurity news
 
 ```bash
 # Clone the project
-git clone https://github.com/yourname/twiscope.git
-cd twiscope
+git clone https://github.com/nullom/twiscope-bot.git
+cd twiscope-bot
 
 # Create virtual environment (recommended)
 python -m venv venv
@@ -99,7 +103,7 @@ python main.py
    
    runcmd:
      - mkdir -p /opt/twiscope
-     - git clone https://github.com/yourname/twiscope.git /opt/twiscope
+     - git clone https://github.com/nullom/twiscope-bot.git /opt/twiscope
      - chown -R ubuntu:ubuntu /opt/twiscope
      - cd /opt/twiscope
      - pip3 install -r requirements.txt
@@ -125,9 +129,10 @@ python main.py
 ---
 
 ## 📦 Versioning
-Current version: v2.0.1
+Current version: v2.0.2
 - v2.0.0: Major update with cloud deployment support
 - v2.0.1: Code quality improvements and documentation updates
+- v2.0.2: Enhanced project description and repository URL updates
 
 ---
 
@@ -141,6 +146,12 @@ MIT License. Feel free to fork and contribute!
 
 ---
 
-For future plans including sentiment analysis, custom scoring rules, or web dashboard, stay tuned.
+## 🔮 Future Plans
+- Sentiment analysis for threat intelligence
+- Customizable scoring rules via configuration
+- Web dashboard for monitoring and configuration
+- Integration with additional news sources
+- AI-powered relevance scoring
+- Custom notification rules and filters
 
 > Made with ❤️ by [nullom]
