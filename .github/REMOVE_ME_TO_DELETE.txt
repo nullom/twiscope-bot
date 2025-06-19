@@ -1,1 +1,0 @@
-This file is a placeholder to allow safe deletion of the .github folder if empty.

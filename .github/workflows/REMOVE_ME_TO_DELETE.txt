@@ -1,1 +1,0 @@
-This file is a placeholder to allow safe deletion of the .github/workflows folder if empty.
